@@ -1,18 +1,23 @@
-// script.js - AI StyleMate Logic (Final Version with Personal Tone Recommendation)
+// script.js - AI StyleMate Logic (Final Version with Face Detection)
 
 // ----------------------------------------------------
-// 1. MODEL PATHS & RECOMMENDATION DATA (경로 및 데이터 정의)
+// 1. MODEL PATHS, VARIABLES & DATA DEFINITION
 // ----------------------------------------------------
 const URL_MODEL_1 = "./models/model_1/"; 
 const URL_MODEL_2 = "./models/model_2/"; 
 
 let model1, model2, webcam;
+let faceDetectorModel; // 💡 얼굴 감지 모델 변수
 let labelContainer = document.getElementById("label-container");
 let currentModel = 0; 
 let requestID; 
 let isRunning = false; 
 let isInitialized = false; 
 let currentSource = 'webcam'; 
+
+// 💡 얼굴 감지 임계값 (필요 시 조정 가능)
+const FACE_DETECTION_THRESHOLD = 0.9; // 얼굴 감지 신뢰도
+const MIN_FACE_SIZE = 50; // 최소 얼굴 크기 (픽셀)
 
 // 💡 얼굴형별 추천 데이터 및 이미지 URL 정의
 const faceTypeData = {
@@ -60,14 +65,14 @@ const personalToneData = {
         hair: "Ash brown, ash blonde, blue-black",
         clothing: "Light tones: Ice blue, lavender, lilac pink | Dark tones: Navy, charcoal gray, burgundy | Neutrals: White, cool gray",
         makeup: "Lips: Raspberry, fuchsia, cool pink | Eyes: Mauve, silver, cool brown | Blush: Rose pink, lilac pink",
-        image: 'images/cool_tone.png' // <-- 최종 파일명
+        image: 'images/cool_tone.png' 
     },
     "Warm": {
         summary: "Yellow-based and orange-based warm hues enhance natural warmth and give a healthy glow.",
         hair: "Golden brown, copper brown",
         clothing: "Light tones: Coral, peach, salmon | Dark tones: Olive, khaki, mustard | Neutrals: Beige, ivory, cream",
         makeup: "Lips: Coral, orange-red, brick | Eyes: Gold, bronze, warm brown | Blush: Peach, coral, apricot",
-        image: 'images/warm_tone.png' // <-- 최종 파일명
+        image: 'images/warm_tone.png' 
     }
 };
 
@@ -79,19 +84,15 @@ const personalToneData = {
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("start-button").addEventListener("click", toggleAnalysis);
     
-    // 모델 전환 버튼 연결
     document.getElementById("model1-btn").addEventListener("click", () => handleModelChange(1));
     document.getElementById("model2-btn").addEventListener("click", () => handleModelChange(2));
     
-    // 모드 전환 버튼 연결
     document.getElementById("mode-webcam").addEventListener("click", () => switchMode('webcam'));
     document.getElementById("mode-upload").addEventListener("click", () => switchMode('image'));
 
-    // 이미지 업로드 입력 변경 감지
     document.getElementById("image-upload").addEventListener("change", handleImageUpload);
     document.getElementById("process-image-btn").addEventListener("click", processUploadedImage);
     
-    // 💡 얼굴형 선택 버튼 이벤트 리스너 추가
     document.querySelectorAll('.face-select-btn').forEach(button => {
         button.addEventListener('click', (e) => {
             document.querySelectorAll('.face-select-btn').forEach(btn => btn.classList.remove('active'));
@@ -102,7 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 💡 퍼스널 톤 선택 버튼 이벤트 리스너 추가 
     document.querySelectorAll('.tone-select-btn').forEach(button => {
         button.addEventListener('click', (e) => {
             document.querySelectorAll('.face-select-btn').forEach(btn => btn.classList.remove('active')); 
@@ -115,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     switchMode('webcam');
     
-    // 초기에는 두 추천 섹션 모두 숨김
     document.getElementById("style-selection-controls").style.display = 'none';
     document.getElementById("tone-selection-controls").style.display = 'none';
 });
@@ -193,6 +192,9 @@ async function toggleAnalysis() {
             model1 = await tmImage.load(URL_MODEL_1 + "model.json", URL_MODEL_1 + "metadata.json");
             model2 = await tmImage.load(URL_MODEL_2 + "model.json", URL_MODEL_2 + "metadata.json");
             
+            // 💡 얼굴 감지 모델 로드 추가
+            faceDetectorModel = await blazeface.load();
+
             const flip = true; 
             webcam = new tmImage.Webcam(400, 300, flip); 
             await webcam.setup(); 
@@ -248,30 +250,23 @@ function handleModelChange(newModel) {
     currentModel = newModel;
     updateModelInfo();
     
-    // 모델 전환 시 스타일/톤 추천 섹션 표시/숨김 처리 
     const styleControls = document.getElementById("style-selection-controls");
     const toneControls = document.getElementById("tone-selection-controls"); 
     const recommendationOutput = document.getElementById("recommendation-output");
     
-    // 얼굴형 분석 모델(Model 1)일 때
     if (newModel === 1) { 
         styleControls.style.display = 'block';
         toneControls.style.display = 'none';
         recommendationOutput.innerHTML = '<p>Select a Face Type button from the **Hair Style Guide** to see recommendations.</p>';
-        
-        // 버튼 선택 초기화
         document.querySelectorAll('.tone-select-btn').forEach(btn => btn.classList.remove('active'));
         
-    } else { // 퍼스널 톤 분석 모델(Model 2)일 때
+    } else { 
         styleControls.style.display = 'none'; 
         toneControls.style.display = 'block'; 
         recommendationOutput.innerHTML = '<p>Select a Personal Tone button from the **Personal Tone Guide** to see recommendations.</p>';
-
-        // 버튼 선택 초기화
         document.querySelectorAll('.face-select-btn').forEach(btn => btn.classList.remove('active'));
     }
     
-    // 일시 정지 상태일 때 즉시 예측 실행 (화면 갱신)
     if ((currentSource === 'webcam' && !isRunning && isInitialized) || currentSource === 'image') {
         const modelToUse = (currentModel === 1) ? model1 : model2;
         const modelName = (currentModel === 1) ? "Face Type Analysis" : "Personal Tone Analysis";
@@ -317,6 +312,7 @@ async function processUploadedImage() {
         try {
             model1 = await tmImage.load(URL_MODEL_1 + "model.json", URL_MODEL_1 + "metadata.json");
             model2 = await tmImage.load(URL_MODEL_2 + "model.json", URL_MODEL_2 + "metadata.json");
+            faceDetectorModel = await blazeface.load(); // 💡 얼굴 감지 모델 로드
             isInitialized = true;
         } catch(e) {
             labelContainer.innerHTML = 'Error loading models. Check console.';
@@ -335,14 +331,46 @@ async function processUploadedImage() {
 
 
 // ===============================================
-// 7. Core Prediction and UI Update 
+// 7. Core Prediction and UI Update (핵심 수정 부분)
 // ===============================================
 
 async function predict(modelToUse, modelName, element) {
-    if (!modelToUse) {
-        labelContainer.innerHTML = `Error: ${modelName} is not loaded.`;
+    if (!modelToUse || !faceDetectorModel) {
+        labelContainer.innerHTML = `Error: ${modelName} or Face Detector is not loaded.`;
         return;
     }
+    
+    // ----------------------------------------------------------------
+    // 💡 1. 얼굴 감지(Face Detection) 로직: 얼굴의 명확성 확인
+    // ----------------------------------------------------------------
+    const predictions = await faceDetectorModel.estimateFaces(element, FACE_DETECTION_THRESHOLD);
+
+    if (predictions.length === 0) {
+        labelContainer.innerHTML = '<div style="color: red; font-weight: bold; padding: 10px;">⚠️ 경고: 얼굴이 명확하게 감지되지 않았습니다!</div><p>분석을 진행하려면 얼굴이 정면으로 잘 보이고, 충분히 밝으며, 가려지지 않았는지 확인해 주세요.</p>';
+        document.getElementById("recommendation-output").innerHTML = '<p>얼굴 인식 실패: 명확한 얼굴을 감지할 수 없습니다.</p>';
+        
+        document.getElementById("style-selection-controls").style.display = 'none';
+        document.getElementById("tone-selection-controls").style.display = 'none';
+        return; 
+    }
+    
+    // 선택적: 얼굴 크기 검사 (너무 멀리 있거나 작게 찍힌 경우)
+    const largestFace = predictions[0]; 
+    const faceWidth = largestFace.bottomRight[0] - largestFace.topLeft[0];
+    const faceHeight = largestFace.bottomRight[1] - largestFace.topLeft[1];
+
+    if (faceWidth < MIN_FACE_SIZE || faceHeight < MIN_FACE_SIZE) {
+        labelContainer.innerHTML = '<div style="color: orange; font-weight: bold; padding: 10px;">⚠️ 경고: 얼굴 크기가 너무 작습니다!</div><p>카메라에 더 가까이 다가가거나, 사진에서 얼굴이 더 크게 보이도록 해 주세요.</p>';
+        document.getElementById("recommendation-output").innerHTML = '<p>얼굴 인식 실패: 얼굴 크기가 너무 작습니다.</p>';
+        
+        document.getElementById("style-selection-controls").style.display = 'none';
+        document.getElementById("tone-selection-controls").style.display = 'none';
+        return;
+    }
+    
+    // ----------------------------------------------------------------
+    // 💡 2. 분류(Classification) 로직: 얼굴이 명확할 때만 실행
+    // ----------------------------------------------------------------
     
     const currentMaxPredictions = modelToUse.getTotalClasses(); 
     const prediction = await modelToUse.predict(element);
@@ -356,11 +384,12 @@ async function predict(modelToUse, modelName, element) {
     }
     labelContainer.innerHTML = resultHTML;
     
-    // 예측이 완료되면 해당 모델의 추천 버튼이 보이도록 보장 
     if (currentModel === 1) {
         document.getElementById("style-selection-controls").style.display = 'block';
+        document.getElementById("tone-selection-controls").style.display = 'none'; 
     } else if (currentModel === 2) {
         document.getElementById("tone-selection-controls").style.display = 'block';
+        document.getElementById("style-selection-controls").style.display = 'none'; 
     }
 }
 
