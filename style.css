@@ -242,7 +242,7 @@ h2 .fas {
     transition: background-color 0.2s, transform 0.2s;
 }
 .face-select-btn.active {
-    background: linear-gradient(45deg, #007bff, #0056b3); 
+    background: linear-gradient(to right, #FFC0CB, #ADD8E6); 
     box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
 }
 
@@ -497,4 +497,5 @@ h2 .fas {
         justify-content: flex-start;
     }
 }
+
 
