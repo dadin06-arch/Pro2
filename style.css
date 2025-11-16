@@ -2,7 +2,7 @@
 
 /* 변수 설정 */
 :root {
-    --gradient-start: #efb799;        /* 연한 핑크 */
+    --gradient-start: #EFB799;        /* 연한 핑크 */
     --gradient-end: #96b7c8;          /* 연한 스카이 블루 */
     --main-text-color: #333333;       /* 메인 텍스트 색상 */
     --h2-underline-color: linear-gradient(to right, #FFC0CB, #ADD8E6); /* H2 밑줄 그라데이션 */
@@ -326,3 +326,4 @@ h2 .fas {
     }
 
 }
+
