@@ -2,8 +2,8 @@
 
 /* 변수 설정 */
 :root {
-    --gradient-start: #EFB799;        /* 연한 핑크 */
-    --gradient-end: #96b7c8;          /* 연한 스카이 블루 */
+    --gradient-start: #f9cbb2;        /* 연한 핑크 */
+    --gradient-end: #b8d1de;          /* 연한 스카이 블루 */
     --main-text-color: #333333;       /* 메인 텍스트 색상 */
     --h2-underline-color: linear-gradient(to right, #FFC0CB, #ADD8E6); /* H2 밑줄 그라데이션 */
     --card-bg: #FFFFFF;               /* 카드 배경색 */
@@ -326,4 +326,5 @@ h2 .fas {
     }
 
 }
+
 
