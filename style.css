@@ -498,6 +498,143 @@ h2 .fas {
 }
 
 
+/* ============================= */
+/* 🌟 반응형 최적화 전체 적용 */
+/* ============================= */
+
+/* 태블릿 이하 (최대 1024px) */
+@media (max-width: 1024px) {
+    header {
+        padding: 30px 15px;
+    }
+
+    h1 {
+        font-size: 3em;
+    }
+
+    .header-icon {
+        width: 65px;
+        height: 65px;
+    }
+
+    .card {
+        padding: 25px;
+    }
+}
+
+/* 모바일 (최대 768px) */
+@media (max-width: 768px) {
+    header {
+        padding: 25px 10px;
+    }
+
+    .header-content-wrapper {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .header-icons-left,
+    .header-icons-right {
+        gap: 10px;
+    }
+
+    .header-icon {
+        width: 55px;
+        height: 55px;
+    }
+
+    h1 {
+        font-size: 2.5em;
+        letter-spacing: 1px;
+    }
+
+    .subtitle {
+        font-size: 1.1em;
+    }
+
+    #main-content {
+        flex-direction: column;
+        padding: 0 15px 40px;
+    }
+
+    .card {
+        min-width: 100%;
+        padding: 22px;
+    }
+
+    /* 버튼 줄바꿈 */
+    .button-group {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    /* 웹캠 / 이미지 */
+    #webcam-container canvas,
+    #webcam-container img {
+        max-width: 300px;
+    }
+
+    /* 얼굴형 추천 반응형 */
+    .style-column {
+        flex-direction: column;
+        align-items: center;
+        padding: 12px;
+    }
+
+    .style-column img {
+        width: 85% !important;
+        max-width: 220px !important;
+        height: auto !important;
+    }
+
+    /* 퍼스널톤 추천 반응형 */
+    .tone-styles-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .tone-image-column img {
+        width: 120px !important;
+        height: 120px !important;
+        max-width: 120px !important;
+    }
+
+    .tone-text-column {
+        width: 100%;
+        padding: 0 10px;
+    }
+}
+
+/* 초소형 모바일 (최대 480px) */
+@media (max-width: 480px) {
+
+    h1 {
+        font-size: 2.0em;
+    }
+
+    .header-icon {
+        width: 45px;
+        height: 45px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    .tone-image-column img {
+        width: 100px !important;
+        height: 100px !important;
+    }
+
+    .face-select-btn,
+    .tone-select-btn {
+        padding: 8px 12px;
+        font-size: 0.85em;
+    }
+}
+
 
 
 
