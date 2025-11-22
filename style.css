@@ -2,8 +2,8 @@
 
 /* 변수 설정 */
 :root {
-    --gradient-start: #f9cbb2;        /* 연한 핑크 */
-    --gradient-end: #b8d1de;          /* 연한 스카이 블루 */
+    --gradient-start: #FFC0CB;        /* 연한 핑크 */
+    --gradient-end: #ADD8E6;          /* 연한 스카이 블루 */
     --main-text-color: #333333;       /* 메인 텍스트 색상 */
     --h2-underline-color: linear-gradient(to right, #FFC0CB, #ADD8E6); /* H2 밑줄 그라데이션 */
     --card-bg: #FFFFFF;               /* 카드 배경색 */
@@ -14,13 +14,13 @@
     --font-lato: 'Lato', sans-serif;
 
     /* 버튼 색상 */
-    --primary-button-bg: linear-gradient(to right, #efb799, #96b7c8); /* Start 버튼 그라데이션 */
+    --primary-button-bg: linear-gradient(to right, #6a82fb, #fc5c7d); /* Start 버튼 그라데이션 */
     --primary-button-hover-bg: linear-gradient(to right, #4c62e0, #e04461);
     --secondary-button-bg: #5a5a5a; /* Pause 버튼 진한 회색 */
     --secondary-button-hover-bg: #4a4a4a;
 
     --mode-button-border: #888888; /* Mode 버튼 테두리 */
-    --mode-button-active-bg: linear-gradient(to right, #efb799, #96b7c8); /* Mode 버튼 활성 배경 */
+    --mode-button-active-bg: linear-gradient(to right, #6a82fb, #fc5c7d); /* Mode 버튼 활성 배경 */
     --mode-button-active-text: #FFFFFF;
 
     --model-select-bg: #e0e0e0; /* Model Select 버튼 기본 배경 */
