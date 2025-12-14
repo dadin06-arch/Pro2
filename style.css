@@ -672,41 +672,89 @@ hr {
 
 
 
+/반응형 디자인/
 
-
-/* 반응형 디자인 */
 @media (max-width: 768px) {
-    /* 얼굴형 추천 반응형 유지 */
+    /* 💡 [추가] 헤더 텍스트와 아이콘 크기 조정 */
+    header {
+        padding: 20px 10px;
+    }
+    .header-content-wrapper {
+        flex-direction: column; /* 세로로 쌓기 */
+        text-align: center;
+    }
+    .header-icons-left, .header-icons-right {
+        gap: 10px; 
+    }
+    .header-icon {
+        width: 50px; /* 아이콘 크기 축소 */
+        height: 50px;
+    }
+    h1 {
+        font-size: 2.5em; /* 타이틀 크기 축소 */
+    }
+    .subtitle {
+        font-size: 1em;
+    }
+    h2 {
+        font-size: 1.5em; /* 섹션 타이틀 크기 축소 */
+    }
+
+    /* 카드 너비 조정 */
+    .card {
+        flex: 1 1 100%; /* 모바일에서는 너비 100% 사용 */
+        min-width: unset;
+        padding: 25px;
+    }
+    
+    /* 얼굴형 추천 반응형 유지 및 이미지 크기 조정 */
+    .hair-styles-container {
+        gap: 15px;
+    }
     .style-column {
         flex-direction: column; 
         align-items: center;
+        flex: 1 1 100%; /* 모바일에서는 100% 사용 */
+        min-width: unset;
     }
     .style-column h5 {
-        text-align: center;
+        font-size: 0.9em;
     }
     .style-column img {
-        width: 80% !important; 
-        height: auto !important; 
-        max-width: 250px !important;
+        /* 이미지 크기 고정값을 100px로 줄여 모바일 화면에 맞춤 */
+        width: 100px !important; 
+        height: 100px !important; 
+        max-width: 100px !important;
     }
 
     /* 톤 추천 반응형 수정 */
     .tone-styles-container {
         flex-direction: column; 
         align-items: center;
+        gap: 15px;
     }
     .tone-image-column {
-        margin-bottom: 15px;
+        margin-bottom: 0;
         flex: 0 0 auto;
     }
     .tone-image-column img {
-        /* 반응형에서는 고정 크기 대신 최대 너비로 조정 */
-        width: 100% !important; 
+        /* 고정 크기 대신 최대 너비로 조정 (약간 더 작게) */
+        width: 250px !important; 
         height: auto !important; 
-        max-width: 300px !important; /* 모바일에서 너무 커지지 않게 제한 */
+        max-width: 250px !important; 
     }
     .tone-text-column {
         width: 100%;
+        text-align: center;
+    }
+    .tone-category {
+        text-align: left; /* 텍스트는 다시 왼쪽 정렬 */
+    }
+    .tone-category h5 {
+        justify-content: center;
+    }
+    .tone-category p {
+        font-size: 0.9em;
     }
     
     /* 💡 [수정] AR 뷰와 버튼을 세로로 전환 */
@@ -714,40 +762,62 @@ hr {
         flex-direction: column; /* 모바일에서 세로로 쌓기 */
         gap: 20px;
         max-width: 100%;
-        /* 모바일 레이아웃 시 중앙 정렬을 위해 justify-content: center로 복원 */
         justify-content: center;
     }
     #ar-webcam-wrapper {
         width: 100%; 
-        max-width: 400px;
-        height: auto;
-        /* ⭐ 수정 사항: 모바일에서는 음수 마진 제거 */
-        margin-left: 0;
+        max-width: 300px; /* AR 화면 너비를 300px로 축소 */
+        height: 225px; /* 비율 유지 (4:3) */
+        margin-left: 0; /* 음수 마진 제거 */
     }
     
-    /* 💡 [수정] 모바일에서 세 버튼을 가로로 배치 */
+    /* 💡 [수정] 모바일에서 컬러 선택 버튼을 가로로 배치 */
     #color-selection-controls.vertical-group {
         flex-direction: row; /* 모바일에서는 다시 가로로 배치 */
         height: auto;
         width: 100%;
-        max-width: 400px;
+        max-width: 300px; /* AR 화면 너비와 동일하게 */
         justify-content: space-between; 
+        gap: 10px;
     }
     #color-selection-controls.vertical-group .color-btn {
         flex: 1; 
-        margin: 0 5px; 
+        margin: 0; 
+        padding: 10px 5px;
+        font-size: 0.85em;
     }
 
     /* AR 버튼 반응형 */
     .ar-controls-group {
-        flex-direction: column;
+        flex-direction: row; /* AR 제어 버튼은 가로로 유지 */
         gap: 10px;
     }
     .ar-controls-group button {
-        width: 100%;
-        max-width: 300px;
+        width: auto;
+        flex: 1;
+        max-width: unset;
+        font-size: 0.9em;
+    }
+
+    /* 버튼 그룹 간격 조정 */
+    .button-group {
+        gap: 8px;
+    }
+    .model-select-btn {
+        min-width: 120px;
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    .face-type-buttons, .tone-type-buttons {
+        gap: 5px;
+    }
+    .face-select-btn, .tone-select-btn {
+        padding: 8px 10px;
+        font-size: 0.8em;
     }
 }
+
+
 
 
 
