@@ -529,6 +529,10 @@ hr {
 /* 🌟 3. AR 합성 체험 기능 스타일 (디자인 개선) */
 /* ---------------------------------------------------- */
 #ar-container {
+    max-width: 1100px;
+    width: 100%;
+    margin-left: auto; 
+    margin-right: auto;
     margin-top: 30px; 
     padding: 25px;
     border: 2px solid #ADD8E6; 
@@ -561,8 +565,12 @@ hr {
     align-items: center; 
     margin-bottom: 20px;
     width: 100%;
-    /* 최대 너비를 늘려 화면을 중앙에 배치할 여유 공간 확보 */
-    max-width: 900px; 
+    
+    /* ⭐ 수정: 내부 래퍼를 수평 중앙 정렬 ⭐ */
+    max-width: fit-content; 
+    margin-left: auto;
+    margin-right: auto;
+    
     justify-content: center; /* 전체 래퍼를 가운데 정렬 */
 }
 
@@ -570,15 +578,11 @@ hr {
     position: relative; 
     width: 400px; 
     height: 300px;
-    margin: 0 auto;
+    margin: 0; /* 마진 0 유지 */
     border-radius: 10px;
-    overflow: hidden; /* 오버레이/비디오 경계 정리 */
+    overflow: hidden; 
     border: 4px solid #6a82fb;
     box-shadow: 0 0 10px rgba(106, 130, 251, 0.5);
-    
-    /* 버튼 너비(약 120px) + 갭(15px)의 절반만큼 왼쪽으로 밀어 AR 화면을 시각적인 중앙에 위치시킵니다. */
-    /* (120 + 15) / 2 = 67.5px */
-    margin-left: 300px;
 }
 /* ⭐ /수정 사항 */
 
@@ -621,7 +625,73 @@ hr {
 #ar-stop-button {
     padding: 10px 30px;
 }
+#ar-sticker-transform-container {
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    overflow: visible; /* 확대 시 영역을 벗어날 수 있도록 */
+    /* 초기 변형 상태: 중앙 배치, 100% 크기 */
+    transform: translate(0, 0) scale(1); 
+    transition: none; /* JS 제어 시 CSS transition 제거 */
+}
 
+/* 스티커 이미지 (컨테이너 내부) */
+#ar-sticker-overlay {
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    opacity: 1.0; 
+    pointer-events: auto; /* ⭐ 수정: 드래그를 위해 auto로 변경 ⭐ */
+    cursor: move; /* 이동 가능함을 표시 */
+}
+
+/* ⭐ AR 컨트롤 버튼 그룹 스타일 (왼쪽 배치) ⭐ */
+#sticker-controls {
+    display: flex;
+    flex-direction: column; 
+    gap: 15px;
+    height: 300px; 
+    justify-content: space-evenly; 
+    width: 100px; /* 너비 지정 */
+    flex-shrink: 0;
+    margin-right: 15px; /* 웹캠과의 간격 */
+}
+
+.control-btn {
+    /* ⭐ 수정: 버튼 디자인 개선 ⭐ */
+    background: #E0F7FA; /* 매우 연한 하늘색 배경 */
+    color: #00897B;      /* 짙은 청록색 텍스트 */
+    border: 2px solid #B2EBF2; /* 연한 청록색 테두리 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+    padding: 10px 5px;
+    font-size: 0.9em;
+    border-radius: 15px; /* 더 둥근 모서리 */
+    transition: all 0.2s ease;
+    font-weight: 700;
+    
+    display: flex; /* 내부 아이콘/텍스트 정렬 */
+    flex-direction: column; /* 아이콘과 텍스트를 수직으로 쌓음 */
+    align-items: center;
+    justify-content: center;
+    height: 100px; /* 버튼 높이 고정 (전체 480px / 3개 / 간격 고려) */
+}
+
+.control-btn i {
+    /* 아이콘 크기 키우기 */
+    font-size: 1.8em; 
+    margin-bottom: 5px;
+}
+
+.control-btn:hover {
+    background: #B2EBF2; /* 호버 시 색상 강조 */
+    transform: translateY(-2px); /* 약간의 입체감 효과 */
+}
 
 /* style (5).css 파일 (🌟 3. AR 합성 체험 기능 스타일 부분에 추가) */
 
@@ -667,6 +737,7 @@ hr {
     background: linear-gradient(45deg, #4682B4, #87CEEB); /* Cool Blue/Sky */
     color: white;
 }
+
 
 
 
@@ -759,24 +830,48 @@ hr {
     
     /* 💡 [수정] AR 뷰와 버튼을 세로로 전환 */
     #ar-view-and-controls-wrapper {
-        flex-direction: column; /* 모바일에서 세로로 쌓기 */
+        flex-direction: column; 
         gap: 20px;
         max-width: 100%;
         justify-content: center;
     }
+    
+    /* ⭐ 수정: 모바일 AR 웹캠 뷰 크기 조정 ⭐ */
     #ar-webcam-wrapper {
         width: 100%; 
-        max-width: 300px; /* AR 화면 너비를 300px로 축소 */
-        height: 225px; /* 비율 유지 (4:3) */
+        max-width: 360px; /* AR 화면 너비를 360px로 확장 */
+        height: 270px; /* 비율 유지 (4:3) */
         margin-left: 0; /* 음수 마진 제거 */
+    }
+    
+    /* 💡 [수정] 모바일에서 스티커 컨트롤 버튼 그룹을 가로로 배치 */
+    #sticker-controls {
+        flex-direction: row; /* 모바일에서는 가로로 배치 */
+        height: auto;
+        width: 100%;
+        max-width: 360px; /* AR 화면 너비와 동일하게 */
+        justify-content: space-between; 
+        gap: 10px;
+        margin-right: 0; /* 마진 제거 */
+    }
+
+    /* ⭐ 수정: 모바일 컨트롤 버튼 높이 조정 ⭐ */
+    .control-btn {
+        flex: 1; /* 가로 배열 시 균등하게 */
+        height: auto; /* 고정 높이 제거 */
+        padding: 8px 5px; /* 패딩 조정 */
+        font-size: 0.8em;
+    }
+    .control-btn i {
+        font-size: 1.5em; /* 아이콘 크기 약간 축소 */
     }
     
     /* 💡 [수정] 모바일에서 컬러 선택 버튼을 가로로 배치 */
     #color-selection-controls.vertical-group {
-        flex-direction: row; /* 모바일에서는 다시 가로로 배치 */
+        flex-direction: row; 
         height: auto;
         width: 100%;
-        max-width: 300px; /* AR 화면 너비와 동일하게 */
+        max-width: 360px; /* AR 화면 너비와 동일하게 */
         justify-content: space-between; 
         gap: 10px;
     }
@@ -816,6 +911,7 @@ hr {
         font-size: 0.8em;
     }
 }
+
 
 
 
