@@ -26,7 +26,7 @@ AI StyleMate is an AI-based web service that provides personalized hairstyle and
 
 ## Live Demo
 
-🔗 [https://your-service.vercel.app](https://your-service.vercel.app)
+🔗 [[https://dadin06-arch.github.io/Pro2/?v=2](https://dadin06-arch.github.io/Pro2/?v=2)
 
 ---
 
