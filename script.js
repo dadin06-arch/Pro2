@@ -26,6 +26,36 @@ let currentStickerLength = ''; // 현재 스타일의 길이 (예: short 또는 
 // 🌟 스크린샷 버튼 DOM 요소 추가
 const arScreenshotBtn = document.getElementById("ar-screenshot-btn");
 
+// 💡 AR 스티커 변형 상태 변수
+const arStickerTransformContainer = document.getElementById('ar-sticker-transform-container');
+let currentScale = 1.0;
+let currentOffsetX = 0;
+let currentOffsetY = 0;
+const ZOOM_STEP = 0.1;
+const MIN_SCALE = 0.5;
+const MAX_SCALE = 2.0;
+
+// 💡 드래그(이동) 관련 변수
+let isDragging = false;
+let startX, startY;
+
+// 💡 DOM 이벤트 리스너 함수
+function setupStickerControls() {
+    // 1. 확대/축소/리셋 버튼
+    document.getElementById("zoom-in-btn").addEventListener("click", () => adjustStickerTransform(ZOOM_STEP, 'zoom'));
+    document.getElementById("zoom-out-btn").addEventListener("click", () => adjustStickerTransform(-ZOOM_STEP, 'zoom'));
+    document.getElementById("reset-transform-btn").addEventListener("click", resetStickerTransform);
+
+    // 2. 이동 (마우스/터치)
+    arStickerTransformContainer.addEventListener('mousedown', startDrag);
+    arStickerTransformContainer.addEventListener('touchstart', startDrag);
+    
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('touchmove', drag);
+    
+    document.addEventListener('mouseup', stopDrag);
+    document.addEventListener('touchend', stopDrag);
+}
 
 // 💡 얼굴 감지 임계값 (필요 시 조정 가능)
 const FACE_DETECTION_THRESHOLD = 0.9; // 얼굴 감지 신뢰도
@@ -156,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (arScreenshotBtn) {
         arScreenshotBtn.addEventListener('click', captureArScreenshot);
     }
-    
+    setupStickerControls();
     switchMode('webcam');
     
     document.getElementById("style-selection-controls").style.display = 'none';
@@ -577,6 +607,8 @@ async function startArTryOn(stickerPath) {
     
     // AR 컨테이너 표시
     arContainer.style.display = 'block';
+    // 💡 [추가]: 스티커 변형 상태 초기화
+    resetStickerTransform();
     
     // 스티커 이미지 설정
     arStickerOverlay.src = stickerPath;
@@ -640,6 +672,8 @@ function stopArTryOn() {
     arContainer.style.display = 'none';
     arStickerOverlay.style.display = 'none';
     arStickerOverlay.src = "";
+    // 💡 [추가]: 스티커 변형 컨테이너 숨기기/초기화 (선택 사항)
+    resetStickerTransform();
 }
 
 // script (9).js 파일 (9. AR Try-On Logic 부분에 추가)
@@ -672,6 +706,102 @@ function changeStickerColor(colorType) {
 }
 
 
+// 스티커 변형을 적용하는 핵심 함수
+function applyStickerTransform() {
+    arStickerTransformContainer.style.transform = 
+        `translate(${currentOffsetX}px, ${currentOffsetY}px) scale(${currentScale})`;
+}
+
+// 확대/축소 실행 함수
+function adjustStickerTransform(value, type) {
+    if (arContainer.style.display === 'none') return;
+
+    if (type === 'zoom') {
+        let newScale = currentScale + value;
+        // 최소/최대 확대/축소 비율 제한
+        if (newScale < MIN_SCALE) newScale = MIN_SCALE;
+        if (newScale > MAX_SCALE) newScale = MAX_SCALE;
+        currentScale = newScale;
+    }
+    // 'move' 타입은 드래그 로직에서 처리
+    
+    applyStickerTransform();
+}
+
+// 변형 리셋 함수
+function resetStickerTransform() {
+    if (arContainer.style.display === 'none') return;
+    
+    currentScale = 1.0;
+    currentOffsetX = 0;
+    currentOffsetY = 0;
+    applyStickerTransform();
+}
+
+
+// ------------------------------------
+// 드래그(이동) 로직
+// ------------------------------------
+
+function getClientPos(e) {
+    return e.touches ? {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+    } : {
+        x: e.clientX,
+        y: e.clientY
+    };
+}
+
+function startDrag(e) {
+    if (arContainer.style.display === 'none') return;
+    
+    const target = e.target.id;
+    // 스티커 오버레이를 드래그할 때만 작동
+    if (target !== 'ar-sticker-overlay' && target !== 'ar-sticker-transform-container') return;
+
+    e.preventDefault(); 
+    isDragging = true;
+    
+    const pos = getClientPos(e);
+    // 현재 마우스/터치 위치 저장
+    startX = pos.x;
+    startY = pos.y;
+    
+    // 드래그 중 커서 변경
+    arStickerTransformContainer.style.cursor = 'grabbing';
+}
+
+function drag(e) {
+    if (!isDragging) return;
+    e.preventDefault(); 
+    
+    const pos = getClientPos(e);
+    
+    // 이동 거리 계산
+    const deltaX = pos.x - startX;
+    const deltaY = pos.y - startY;
+    
+    // AR 웹캠 래퍼의 크기 (400x300) 대비 이동 비율을 적용
+    // (선택 사항: 더욱 부드러운 제어를 위해)
+    const factor = 1.5; 
+    currentOffsetX += deltaX * factor;
+    currentOffsetY += deltaY * factor;
+    
+    // 현재 위치 업데이트
+    startX = pos.x;
+    startY = pos.y;
+    
+    applyStickerTransform();
+}
+
+function stopDrag() {
+    isDragging = false;
+    arStickerTransformContainer.style.cursor = 'move';
+}
+
+
+
 // ===============================================
 // 10. AR Screenshot Logic (새로 추가된 기능)
 // ===============================================
@@ -695,49 +825,71 @@ function captureArScreenshot() {
     }
 
     // 1. 캔버스 생성 및 크기 설정
+    // 비디오의 실제 표시 크기(400x300)를 사용
+    const videoWidth = arWebcamVideo.offsetWidth; 
+    const videoHeight = arWebcamVideo.offsetHeight;
     const canvas = document.createElement('canvas');
-    // 비디오의 실제 해상도(400x300)를 사용
-    const videoWidth = arWebcamVideo.videoWidth; 
-    const videoHeight = arWebcamVideo.videoHeight;
     canvas.width = videoWidth;
     canvas.height = videoHeight;
     const ctx = canvas.getContext('2d');
 
     // 2. 웹캠 비디오 그리기 (거울 효과 적용)
-    // 웹캠 비디오는 CSS transform: scaleX(-1)로 좌우 반전되어 있으므로, 캔버스에도 동일하게 적용해야 합니다.
-    ctx.save(); // 현재 캔버스 상태 저장
-    ctx.translate(videoWidth, 0); // x축 이동
+    ctx.save();
     ctx.scale(-1, 1); // 좌우 반전
-    ctx.drawImage(arWebcamVideo, 0, 0, videoWidth, videoHeight);
-    ctx.restore(); // 변환 상태 초기화
+    ctx.drawImage(arWebcamVideo, -videoWidth, 0, videoWidth, videoHeight);
+    ctx.restore();
 
-    // 3. 스티커 이미지 그리기
+    // 3. 스티커 이미지 그리기 (⭐ 왜곡 방지 및 변형 적용 핵심 수정 ⭐)
     if (arStickerOverlay.style.display !== 'none' && arStickerOverlay.src) {
         const stickerImg = new Image();
-        stickerImg.crossOrigin = "anonymous"; // CORS 문제 방지
+        stickerImg.crossOrigin = "anonymous";
         
-        stickerImg.onload = () => {            
-            // ⭐ 핵심 수정 시작: 비율 유지 계산 (COVER 모드) ⭐
-            const imageRatio = stickerImg.naturalWidth / stickerImg.naturalHeight;
+        stickerImg.onload = () => {
+            
+            ctx.save(); // 스티커 변형을 위한 캔버스 상태 저장
+            
+            // 캔버스 중앙으로 이동 (변형의 기준점)
+            ctx.translate(videoWidth / 2, videoHeight / 2);
+            
+            // 사용자 확대/축소(Scale) 적용
+            ctx.scale(currentScale, currentScale);
+            
+            // 사용자 이동(Translate) 적용
+            // 이동 값은 이미 캔버스 중앙(0,0)을 기준으로 적용되도록 설계되었지만, 
+            // 캔버스 좌표계가 scale되었으므로 오프셋도 scale된 값으로 나누어 적용해야 합니다.
+            // 하지만 JS 로직에서 offset을 직접 currentOffsetX/Y로 저장했으므로, 
+            // 캔버스 중앙을 기준으로 이동시킵니다.
+            ctx.translate(currentOffsetX / currentScale, currentOffsetY / currentScale);
+            
+            // 4. 스티커 이미지 종횡비 유지하며 그리기
+            // 스티커 이미지는 object-fit: cover와 동일하게 래퍼(400x300)에 꽉 채워져야 합니다.
+            
+            const imgW = stickerImg.naturalWidth;
+            const imgH = stickerImg.naturalHeight;
             const containerRatio = videoWidth / videoHeight;
+            const imageRatio = imgW / imgH;
             
-            let drawWidth, drawHeight, offsetX = 0, offsetY = 0;
-            
-            if (imageRatio > containerRatio) {
-                // 스티커가 컨테이너보다 넓은 경우: 높이를 꽉 채우고 좌우를 자름
-                drawHeight = videoHeight;
-                drawWidth = videoHeight * imageRatio;
-                offsetX = (videoWidth - drawWidth) / 2; // 수평 중앙 정렬 (잘린 부분)
-            } else {
-                // 스티커가 컨테이너보다 좁거나 같은 경우: 너비를 꽉 채우고 상하를 자름
-                drawWidth = videoWidth;
-                drawHeight = videoWidth / imageRatio;
-                offsetY = (videoHeight - drawHeight) / 2; // 수직 중앙 정렬 (잘린 부분)
-            }
-            // ⭐ 수정된 핵심: 비율을 유지한 채 중앙에 그립니다. ⭐
-            ctx.drawImage(stickerImg, offsetX, offsetY, drawWidth, drawHeight);
+            let drawW, drawH;
 
-            // 4. 다운로드 실행
+            if (imageRatio > containerRatio) {
+                // 이미지가 컨테이너보다 넓음 -> 높이를 꽉 채움 (cover 모드)
+                drawH = videoHeight;
+                drawW = videoHeight * imageRatio;
+            } else {
+                // 이미지가 컨테이너보다 좁거나 같음 -> 너비를 꽉 채움 (cover 모드)
+                drawW = videoWidth;
+                drawH = videoWidth / imageRatio;
+            }
+
+            // 변형된 캔버스 중앙(0,0)을 기준으로 이미지 그리기
+            ctx.drawImage(stickerImg, 
+                -drawW / 2, // X 시작 위치
+                -drawH / 2, // Y 시작 위치
+                drawW, drawH);
+
+            ctx.restore(); // 변형 상태 초기화
+
+            // 5. 다운로드 실행
             triggerDownload(canvas);
             canvas.remove();
         };
@@ -748,7 +900,6 @@ function captureArScreenshot() {
         canvas.remove();
     }
 }
-
 
 
 
