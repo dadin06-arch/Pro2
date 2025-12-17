@@ -1,22 +1,41 @@
-# AI StyleMate
+# ✨ AI StyleMate ✨
 
-AI StyleMate is an AI-based web service that provides personalized hairstyle and hair color recommendations based on a user’s face shape and personal skin tone. The system runs entirely in the browser, ensuring fast response times and strong privacy protection.
+AI StyleMate is an **AI-powered web service** that analyzes a user’s **face shape** and **personal skin tone** to provide **personalized hairstyle and hair color recommendations**.
+All analysis runs **entirely in the browser**, ensuring fast performance and strong privacy protection with no image storage.
 
 ---
 
-## Quick Start
+## 🚀 Live Demo
 
-1. Install dependencies:
+🔗 **[https://dadin06-arch.github.io/Pro2/?v=2](https://dadin06-arch.github.io/Pro2/?v=2)**
 
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. Run locally:
+> No mobile app installation required — the service runs directly in a web browser.
+
+---
+
+## 🧭 Project Overview
+
+* 🎯 **Problem**
+  Hairstyles and hair colors are difficult to reverse, yet most people rely on trends or subjective advice when making decisions.
+
+* 💡 **Solution**
+  AI StyleMate provides **data-driven, personalized styling guidance** by analyzing the user’s own facial features and skin tone.
+
+* 🔐 **Privacy-First Design**
+  All AI inference is performed locally in the browser using TensorFlow.js.
+
+---
+
+## ⚡ Quick Start (Local)
+
+> ⚠️ No backend server or Python dependencies are required.
+
+1. Run a simple local server
 
    ```bash
    python -m http.server
    ```
-3. Open browser:
+2. Open your browser
 
    ```
    http://localhost:8000
@@ -24,59 +43,92 @@ AI StyleMate is an AI-based web service that provides personalized hairstyle and
 
 ---
 
-## Live Demo
+## 📊 Dataset
 
-🔗 [[https://dadin06-arch.github.io/Pro2/?v=2](https://dadin06-arch.github.io/Pro2/?v=2)
+* **Sources**
 
----
-
-## Dataset
-
-* **Sources**:
-
-  * Face Shape: Public datasets from platforms such as Kaggle, combined with limited self-captured experimental data for real-world testing
+  * Face Shape: Public datasets from platforms such as Kaggle, combined with limited self-captured experimental data
   * Personal Tone: Public skin tone datasets from open research repositories
-* **Size**: A total of 8,720 images
 
-  * Face Shape: 4,000 images (800 samples per class: Heart, Oblong, Oval, Round, Square)
-  * Personal Tone: 4,720 images (2,334 Cool / 2,386 Warm)
-* **License**: Usage is restricted to academic and non-commercial purposes, in accordance with the original dataset licenses
+* **Size**: **8,720 images** in total
+
+  * Face Shape: 4,000 images
+    (Heart / Oblong / Oval / Round / Square — 800 per class)
+  * Personal Tone: 4,720 images
+    (Cool: 2,334 / Warm: 2,386)
+
+* **License**
+  All datasets are used strictly for **academic and non-commercial purposes**, in compliance with the original licenses.
 
 ---
 
-## Model
+## 🧠 Model
 
 * **Tool**: Google Teachable Machine
-* **Architecture / Export**: TensorFlow.js
-* **Accuracy**:
+* **Export Format**: TensorFlow.js
 
-  * Face Shape Classification: 88% overall accuracy (Oval class reached 100%)
-  * Personal Tone Classification: 88% accuracy
-* **Latency**: Inference results are generated in under 0.5 seconds
-* **Face Detection**: BlazeFace is integrated to improve real-time face tracking and detection accuracy
+### 📈 Performance
+
+* **Face Shape Classification**
+
+  * Overall Accuracy: **88%**
+  * Oval class achieved **100% accuracy**
+
+* **Personal Tone Classification**
+
+  * Accuracy: **88%**
+
+* **Latency**
+
+  * Average inference time: **under 0.5 seconds**
+
+* **Face Detection**
+
+  * BlazeFace is integrated to improve real-time face detection and tracking stability
 
 ---
 
-## Workflow
+## 🛠️ Workflow
 
-1. **Input**: User provides a facial image via webcam or image upload
-2. **Detection**: Face detection is performed using BlazeFace
-3. **Analysis**: The system analyzes face shape or personal tone
-4. **Prediction**: AI models classify features (Heart, Oblong, Oval, Round, Square or Cool/Warm)
-5. **Suggestion**: Personalized hairstyle or color palette recommendations are displayed
-6. **Preview**: An AR-based virtual try-on overlay shows the suggested style in real time
+1. 📷 **Input**
+   The user provides a facial image via webcam or image upload
+
+2. 🧩 **Detection**
+   Face detection is performed using BlazeFace
+
+3. 🔍 **Analysis**
+   The system analyzes either face shape or personal tone
+
+4. 🤖 **Prediction**
+
+   * Face Shape: Heart / Oblong / Oval / Round / Square
+   * Personal Tone: Cool / Warm
+
+5. 💇 **Suggestion**
+   Personalized hairstyle or color palette recommendations are generated
+
+6. 🪞 **Preview**
+   A real-time AR-style overlay allows users to preview the recommended style
 
 ---
 
-## Credits
+## 🔐 Ethics & Privacy
 
-* **Team**: [Kyungmin Lee, Dahye Kim, Hyojin Kim, Kyuwon Lee, Yerim Seok]
+* User images are **never stored or transmitted**
+* All inference runs **locally in the browser**
+* Dataset limitations and bias were documented and addressed through an Error Board
+
+---
+
+## 🙌 Credits
+
+* **Team**: AI StyleMate Team
 * **Data**: Kaggle, Open Research Skin Tone Datasets
-* **Tools**: TensorFlow.js, Google Teachable Machine, BlazeFace, HTML/CSS/JavaScript
+* **Tools**: TensorFlow.js, Google Teachable Machine, BlazeFace
 
 ---
 
-## Notes
+## 📌 Notes
 
-* All inference runs locally in the browser; no user images are stored or transmitted.
-* The project is intended for academic and non-commercial use only.
+* This project is intended for **academic, non-commercial use only**.
+* The web interface is fully responsive for both desktop and mobile environments.
