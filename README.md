@@ -122,7 +122,7 @@ All analysis runs **entirely in the browser**, ensuring fast performance and str
 
 ## 🙌 Credits
 
-* **Team**: AI StyleMate Team
+* **Team**: AI StyleMate Group 21 (Kyungmin Lee, Dahye Kim, Hyojin Kim, Kyuwon Lee, Yerim Seok)
 * **Data**: Kaggle, Open Research Skin Tone Datasets
 * **Tools**: TensorFlow.js, Google Teachable Machine, BlazeFace
 
